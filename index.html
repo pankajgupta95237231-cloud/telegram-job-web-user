@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Earnings - User Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* Login Screen */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo h2 {
+            margin-top: 15px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .logo p {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+
+        .dashboard.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-top h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .logout-icon {
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-icon:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(15deg);
+        }
+
+        .user-info-header {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-mobile {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .earnings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .earnings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .earnings-label {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .earnings-amount {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .earnings-rupee {
+            font-size: 28px;
+        }
+
+        .min-withdrawal-info {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .min-withdrawal-info i {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .min-withdrawal-info span {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .min-withdrawal-info strong {
+            color: #333;
+            font-weight: 700;
+        }
+
+        .btn-withdraw {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-withdraw:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-withdraw:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-withdraw:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            color: #999;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            color: #856404;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-message i {
+            font-size: 20px;
+        }
+
+        /* Withdrawal Status Card */
+        .status-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .status-card h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .fees-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .fees-section h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fees-text {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .qr-code {
+            max-width: 250px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .earnings-amount {
+                font-size: 42px;
+            }
+
+            .modal-content {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-card">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <h2>Task Earnings</h2>
+                <p>Login to check your earnings</p>
+            </div>
+            <div id="loginAlert"></div>
+            <form onsubmit="userLogin(event)">
+                <div class="input-group">
+                    <label>Login ID</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginId" placeholder="Enter your login ID" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <div class="header-top">
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <div class="logout-icon" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+            <div class="user-info-header">
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="user-mobile"><i class="fas fa-phone"></i> <span id="userMobile">Loading...</span></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Earnings Card -->
+            <div class="earnings-card">
+                <div class="earnings-label">Total Earnings</div>
+                <div class="earnings-amount">
+                    <span class="earnings-rupee">₹</span><span id="earnings">0</span>
+                </div>
+                
+                <div class="min-withdrawal-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Minimum withdrawal: <strong>₹<span id="minWithdrawal">0</span></strong></span>
+                </div>
+
+                <div id="withdrawalWarning"></div>
+
+                <button class="btn-withdraw" id="withdrawBtn" onclick="openWithdrawalModal()">
+                    <i class="fas fa-money-bill-wave"></i> Withdraw Earnings
+                </button>
+            </div>
+
+            <!-- Withdrawal Status -->
+            <div class="status-card" id="statusCard" style="display: none;">
+                <h3><i class="fas fa-clock"></i> Latest Withdrawal Request</h3>
+                <div id="withdrawalStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div class="modal" id="withdrawalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-wallet"></i> Request Withdrawal</h3>
+                <button class="modal-close" onclick="closeWithdrawalModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modalAlert"></div>
+
+                <!-- Fees Section -->
+                <div class="fees-section">
+                    <h4><i class="fas fa-receipt"></i> Fees Information</h4>
+                    <div class="fees-text" id="feesText">Loading...</div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="qr-section">
+                    <h4>Scan & Pay Fees</h4>
+                    <img id="qrCode" class="qr-code" alt="Payment QR Code">
+                </div>
+
+                <!-- Form -->
+                <form onsubmit="submitWithdrawal(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Withdrawal Amount</label>
+                        <input type="number" id="withdrawAmount" placeholder="Enter amount" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-receipt"></i> UTR / Transaction Number</label>
+                        <input type="text" id="utrNumber" placeholder="Enter UTR number after payment" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration - SAME AS ADMIN PANEL
+        const firebaseConfig = {
+    apiKey: "AIzaSyCSKLMM0Xgie2f3KL_FB2W8P5El-FtGQnU",
+    authDomain: "telegram-jobs-ea4e6.firebaseapp.com",
+    databaseURL: "https://telegram-jobs-ea4e6-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "telegram-jobs-ea4e6",
+    storageBucket: "telegram-jobs-ea4e6.firebasestorage.app",
+    messagingSenderId: "416985813970",
+    appId: "1:416985813970:web:a31c41dcd723194c66ee0b"
+  };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentUser = null;
+
+        // User Login
+        function userLogin(event) {
+            event.preventDefault();
+
+            const loginId = document.getElementById('loginId').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!loginId || !password) {
+                showAlert('loginAlert', 'Please enter both ID and Password', 'error');
+                return;
+            }
+
+            database.ref('users').orderByChild('loginId').equalTo(loginId).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = Object.entries(snapshot.val())[0];
+                    const userId = userData[0];
+                    const user = userData[1];
+
+                    if (user.password === password) {
+                        currentUser = { ...user, uid: userId };
+                        sessionStorage.setItem('userLoggedIn', JSON.stringify(currentUser));
+                        
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('dashboard').classList.add('active');
+                        loadUserDashboard();
+                    } else {
+                        showAlert('loginAlert', 'Invalid password', 'error');
+                    }
+                } else {
+                    showAlert('loginAlert', 'User not found. Contact admin.', 'error');
+                }
+            }).catch((error) => {
+                showAlert('loginAlert', 'Login error: ' + error.message, 'error');
+            });
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('userLoggedIn');
+                location.reload();
+            }
+        }
+
+        // Check if already logged in
+        window.onload = function() {
+            const savedUser = sessionStorage.getItem('userLoggedIn');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadUserDashboard();
+            }
+        };
+
+        // Load User Dashboard
+        function loadUserDashboard() {
+            // Load user data in real-time
+            database.ref('users/' + currentUser.uid).on('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    currentUser = { ...userData, uid: currentUser.uid };
+                    
+                    // Update UI
+                    document.getElementById('userName').textContent = userData.name;
+                    document.getElementById('userMobile').textContent = userData.mobile;
+                    document.getElementById('earnings').textContent = userData.earnings.toFixed(2);
+                    document.getElementById('minWithdrawal').textContent = userData.minimumWithdrawal;
+
+                    // Check if withdrawal is allowed
+                    const withdrawBtn = document.getElementById('withdrawBtn');
+                    const warningDiv = document.getElementById('withdrawalWarning');
+
+                    if (userData.earnings < userData.minimumWithdrawal) {
+                        withdrawBtn.disabled = true;
+                        warningDiv.innerHTML = `
+                            <div class="warning-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Minimum withdrawal ₹${userData.minimumWithdrawal} required</span>
+                            </div>
+                        `;
+                    } else {
+                        withdrawBtn.disabled = false;
+                        warningDiv.innerHTML = '';
+                    }
+                }
+            });
+
+            // Load latest withdrawal status
+            loadWithdrawalStatus();
+        }
+
+        // Load Withdrawal Status
+        function loadWithdrawalStatus() {
+            database.ref('withdrawals').orderByChild('userId').equalTo(currentUser.uid).on('value', (snapshot) => {
+                const withdrawals = snapshot.val();
+                const statusCard = document.getElementById('statusCard');
+                const statusDiv = document.getElementById('withdrawalStatus');
+
+                if (!withdrawals) {
+                    statusCard.style.display = 'none';
+                    return;
+                }
+
+                // Get latest withdrawal
+                const withdrawalArray = Object.entries(withdrawals).sort((a, b) => {
+                    return new Date(b[1].timestamp) - new Date(a[1].timestamp);
+                });
+
+                const latestWithdrawal = withdrawalArray[0][1];
+                const statusClass = latestWithdrawal.status === 'Pending' ? 'status-pending' : 
+                                  latestWithdrawal.status === 'Approved' ? 'status-approved' : 'status-rejected';
+
+                statusCard.style.display = 'block';
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <div class="status-row">
+                            <span class="status-label">Amount</span>
+                            <span class="status-value">₹${latestWithdrawal.amount}</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">UTR Number</span>
+                            <span class="status-value">${latestWithdrawal.utr}</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">Date</span>
+                            <span class="status-value">${new Date(latestWithdrawal.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">Status</span>
+                            <span class="status-badge ${statusClass}">${latestWithdrawal.status}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Open Withdrawal Modal
+        function openWithdrawalModal() {
+            const modal = document.getElementById('withdrawalModal');
+            modal.classList.add('active');
+
+            // Load fees text and QR code
+            database.ref('settings/feesText').once('value').then((snapshot) => {
+                const feesText = snapshot.val() || 'No fees information available';
+                document.getElementById('feesText').textContent = feesText;
+            });
+
+            database.ref('settings/qrCodeUrl').once('value').then((snapshot) => {
+                const qrUrl = snapshot.val();
+                if (qrUrl) {
+                    document.getElementById('qrCode').src = qrUrl;
+                } else {
+                    document.getElementById('qrCode').alt = 'QR Code not available';
+                }
+            });
+        }
+
+        // Close Withdrawal Modal
+        function closeWithdrawalModal() {
+            document.getElementById('withdrawalModal').classList.remove('active');
+            document.getElementById('modalAlert').innerHTML = '';
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('utrNumber').value = '';
+        }
+
+        // Submit Withdrawal
+        function submitWithdrawal(event) {
+            event.preventDefault();
+
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const utr = document.getElementById('utrNumber').value.trim();
+
+            if (amount < currentUser.minimumWithdrawal) {
+                showAlert('modalAlert', `Minimum withdrawal amount is ₹${currentUser.minimumWithdrawal}`, 'error');
+                return;
+            }
+
+            if (amount > currentUser.earnings) {
+                showAlert('modalAlert', 'Withdrawal amount cannot exceed your earnings', 'error');
+                return;
+            }
+
+            const withdrawalData = {
+                userId: currentUser.uid,
+                userName: currentUser.name,
+                userMobile: currentUser.mobile,
+                amount: amount,
+                utr: utr,
+                status: 'Pending',
+                timestamp: new Date().toISOString()
+            };
+
+            database.ref('withdrawals').push(withdrawalData).then(() => {
+                showAlert('modalAlert', 'Withdrawal request submitted successfully!', 'success');
+                setTimeout(() => {
+                    closeWithdrawalModal();
+                }, 2000);
+            }).catch((error) => {
+                showAlert('modalAlert', 'Error submitting request: ' + error.message, 'error');
+            });
+        }
+
+        // Show Alert
+        function showAlert(elementId, message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const alertHtml = `<div class="alert ${alertClass}"><i class="fas ${icon}"></i> ${message}</div>`;
+            document.getElementById(elementId).innerHTML = alertHtml;
+            
+            setTimeout(() => {
+                document.getElementById(elementId).innerHTML = '';
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>
